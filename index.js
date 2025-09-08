@@ -2,12 +2,18 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const passport = require("passport");
+const cors = require('cors');
+
 const { users } = require('./services/databse');
 require('./services/passport')
 const app = express();
 const {ensureAuthenticated} = require('./middleware/auth');
 
 app.use(express.json());
+app.use(cors({
+    credentials: true,
+    origin: 'http://localhost:3001'
+}));
 app.use(session({
     secret: 'my-session-secret',
     resave: false,
@@ -51,6 +57,11 @@ app.post("/register", async(req, res)=>{
             message: "somting went wrong",
         })
     }
+});
+
+app.get('/auth/google', passport.authenticate('google', {scope: ['profile', 'email']}));
+app.get('/auth/google/callback', passport.authenticate('google', {failureFlash: false}), (req, res)=>{
+    res.redirect('http://localhost:3001');
 });
 
 app.post("/login", async(req, res)=>{

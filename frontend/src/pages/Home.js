@@ -10,7 +10,8 @@ const Home = () => {
     const fetchProtectedRoute = async () => {
         try {
             const response = await axios.get('http://localhost:3000/me', { withCredentials: true })
-            setMessage(`Welcome, ${response.data.name}`)
+            console.log('response - ', JSON.stringify(response));
+            setMessage(`Welcome, ${response.data.name?.givenName}`)
             setIsAuthenticated(true)
         } catch (error) {
             const errorMessage = error.response?.data?.error || 'Something went wrong'
@@ -21,7 +22,7 @@ const Home = () => {
 
     const handleLogout = async () => {
         try {
-            await axios.get('http://localhost:3000/logout', { withCredentials: true })
+            await axios.post('http://localhost:3000/logout', { withCredentials: true })
             setIsAuthenticated(false)
             navigate('/login')
         } catch (error) {
